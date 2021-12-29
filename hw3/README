@@ -1,0 +1,112 @@
+starting hw3
+
+WRITEUP:
+
+This program was motivated by wing design. An airfoil, the 2D cross section 
+of a wing, can be experimentally tested via computer similation 
+to gather information regarding the pressure distribution at different 
+angles of stress. In my program, I created an airfoil class which 
+is able to give insights on the pressure distribution and stangation 
+point of an airfoil given pressure coefficients at each panel of data.
+The motivation for a class structure is to create an abstraction 
+for the calculation of airfoils. Instead of the user having to go through
+each function (and having knowledge on how to stich them together) to 
+get airfoil calculations, the user is simply able to define an airfoil
+object, and the calculations are able to occur under the hood without
+the user needing to call any particular functions. This reduces 
+the complexity of data and hides unnecessary details for the user. 
+
+First, I initialize the class in an encapsulated __init__  method with 
+public and encapsulated variables. The motivation for including encapsulated
+variables within my __init__ method is such that the user is unable 
+to access the lists and dictionaries used for the output while they are
+being constructed. That way, the user is only able to access a complete 
+result.
+
+The first method that is called is the run_functions method. This method
+first checks the existence and readability of a directory. It throws a 
+RuntimeError if the directory doesn't exist, if the input directory invokes
+multiple paths, or if the input is not a valid directory. After satisfying
+these requirements, the run_functions function invokes the following functions
+to calculate the lift coefficient (the integration of the pressure coefficients
+along the surface of the airfoil), and the stagnation point. This design 
+implements decomposition, as each method described below breaks down the 
+large problem of lift coefficient calculation into well defined steps.
+ 
+The first function invoked is the read_xy function. This method reads
+in the airfoil data - the (x,y) coordinates which describes the position
+of the airfoil edge at different points along the airfoil. While reading
+in the data, I raise a RuntimeError if the coordinate file is not 
+found in the given directory. Additionally, I raise another RuntimeErorr 
+if the datafile does not contain both an x and y value, or if the x and y 
+values cannot be cast as numerical floats. The necessary data file must 
+be in the form of (x,y) pairs which are numerical in nature. Once I read
+in the data, I store the (x,y) pairs in a dictionary as a value associated
+with a position on an airfoil. 
+
+The next function that is called calculates the chord length of the airfoil,
+which is defined by the span of the airfoil geometry along the x axis (ie. the
+distance from the trailing edge (position 1 of the end of the airfoil) to 
+the leading edge (the furthest position away from position 1 on the airfoil)) 
+in 2 dimensional space. This function returns our normalization factor which
+is used to "non-dimensionalize" airfoil geometry. 
+
+Following, we compute the get_alpha method. This method retrieves the pressure
+reading values for each panel of the airfoil while under each angle(alpha) of 
+attack or stress. This method invokes a RuntimeError under three circumstances. 
+First, if the method cannot find an alpha value in the directory. Second, if 
+the alpha values are non-numerical. And third, if the pressure readings
+are unable to be parsed as floats. This method stores alpha values and pressure
+readings in a nested dictionary. The outer dictionary contains the alpha value 
+as the key and the dictionary of pressure coefficients as the value. The inner
+dictionary contains the panel id (a panel is a stretch of the airfoil edge 
+between two consecutive points, so the panel id is the edge associated with a
+particular pair of points) as the key and the pressure coefficient as 
+the value associated with that panel id. 
+
+Next, we compute the lift coefficient, the integration of the pressure 
+coefficient distribution over the airfoil surface. We do so by calling two 
+methods. First, the compute_lift_coefficient_method calls on the compute_deltas
+method, which calculates the value for delta_cx and delta_cy - the components 
+in the x and y direction of the non-dimensional force acting perpendicular
+to the panel. We do so in the following steps: delta_cx = -(pressure coeff)*
+length of the panel in the y direction / chord length, and delta_cy = 
+(pressure coeff)*length of the panel in the x direction / chord length. 
+We note that the pressure coefficient is distinct for each panel.
+
+In this method, we also calculate the stagnation point
+for each selected alpha. The stagnation point is the point where the flow
+velocity goes to 0, or when the pressure coefficient goes to 1.0. The deltas
+are returned as list (which are variables in the compute_list_coefficient
+method), and the stagnation point is stored as a list containing the pressure
+coefficient, and the mean of x and y value of the points containing the 
+panel where the stagnation point occurs. 
+
+The compute deltas method will then return a list of components in the x 
+and y direction for our non-dimensional pressure. These components will be
+return in the compute_lift_coefficient function, where we calculate the 
+lift coefficient. We do so by taking the difference of the following 2 steps: 1. 
+summing delta_cy (the y component of the non-dimensional force) * 
+cos(alpha), 2. summing delta_cx (the x component of the non-dimensional force) *
+sin(alpha). We store this value in a dictionary with the alpha 
+(angle of attack) as the key and the lift coefficient as the value. 
+
+At this stage, our methods are complete to get the stagnation point and the 
+lift coefficient. I made it so the methods above are public rather than 
+encapsulated methods. I did this with the motivation that the user could 
+get a particular set of values for a particular test case if needed. For 
+example, if the user for some reason wanted the chord lengh, then the 
+user could call that method on its own without needing to dig into 
+the code itself or re-write the function. 
+
+The last method I call is the encapsulated __repr__ method. This prints
+our output in a user-friendly manner. In this method, I properly format 
+alpha values, lift coefficients, and stagnation points in our data. 
+We expect a clean, tabular format from this method that is invoked by the print
+statement in the main.py method. In this output, each alpha value is 
+associated with its respective lift coefficient and stagnation point. This
+output creates quite a simple way for viewing the results of a large number 
+of functions, without the need for the user to run any of the functions 
+on their own. This is just one example of the power of abstraction and OOPs! 
+
+   

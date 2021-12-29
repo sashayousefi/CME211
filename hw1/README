@@ -1,0 +1,108 @@
+This is the beginning of homework 1. We are analyzing shotgun sequencing for a genome using python
+
+Write-up for part 2: 
+
+$ python3 generatedata.py 1000 600 50 ref_1.txt reads_1.txt
+reference length: 1000
+number reads: 600
+read length: 50
+aligns 0: 0.14166666666666666
+aligns 1: 0.7616666666666667
+aligns 2: 0.09666666666666666
+
+$ python3 generatedata.py 10000 6000 50 ref_2.txt reads_2.txt
+reference length: 10000
+number reads: 6000
+read length: 50
+aligns 0: 0.14766666666666667
+aligns 1: 0.7513333333333333
+aligns 2: 0.101
+
+$ python3 generatedata.py 100000 60000 50 ref_3.txt reads_3.txt
+reference length: 100000
+number reads: 60000
+read length: 50
+aligns 0: 0.1529
+aligns 1: 0.7471833333333333
+aligns 2: 0.09991666666666667
+
+1. In my handcraft dataset, I created the reference genome by treating
+ it as two halves. I made the first half AATGA, and the second half was
+ ATAAT. In concatenating these two halves together, I get the sequence
+ AATGAATAAT, which contains three AAT repeats. In order to ensure that
+ my program only grabbed the first two reads, I choose AAT as
+ double-alignment sequence. I chose GAA, TAA, and ATA as single
+ alignment sequences, and AGT as the sequence that does not align.
+ Since AGT is TGA (a match) backwards, I chose this to make sure our
+ program was not taking the reverse sequence into consideration.
+ Although my code works properly here, there are other edge cases
+ in different datasets (such as odd length datasets) which can 
+ cause problems in the code. Thus, we can not guarantee it works
+ properly.
+
+2. We should expect something quite close to 15%/75%/10%, but not
+ exactly. Since we are randomly sampling a uniform 0-1 interval,
+ we should expect some randomness in data generation. Size of the
+ dataset affects how close our percentages are to 15%/75%/10%.
+ Since we are choosing at random from a uniform(0,1) distribution,
+ the more data we have the more we will tend towards the specified
+ distribution.
+
+3. I spent about an hour and a half on this part. A lot of it was
+ getting used to nano syntax and reading and writing files 
+
+
+Write-up for Part 3:
+
+
+$ python3 processdata.py ref_1.txt reads_1.txt align_1.txt
+reference length: 1000
+number reads: 600
+aligns 0: 0.14166666666666666
+aligns 1: 0.7616666666666667
+aligns 2: 0.09666666666666666
+elapsed time: 0.007416725158691406
+
+$ python3 processdata.py ref_2.txt reads_2.txt align_2.txt
+reference length: 10000
+number reads: 6000
+aligns 0: 0.14766666666666667
+aligns 1: 0.751
+aligns 2: 0.10133333333333333
+elapsed time: 0.29868006706237793
+
+$ python3 processdata.py ref_3.txt reads_3.txt align_3.txt
+reference length: 100000
+number reads: 60000
+aligns 0: 0.14973333333333333
+aligns 1: 0.7514
+aligns 2: 0.09886666666666667
+elapsed time: 27.854762315750122
+
+1. The distributions computed in part 3 do not exactly match those
+ in part 2. They are incredible similar and often the same,
+ but not always. Due to the nature of randomness in creating the
+ reference genome, there could be sequences which align to two or
+ more positions on the genome, even if they were picked from the
+ initial 50% “random portion” of the genome. Since that initial
+ 50% is random, it could very well contain a sequence that is also
+ contained in the latter portion of the “copied” genome. Resulting
+ in an unexpected match.
+ 
+2. From 1000 —> 10000 reads, we experience a consecutive 4000x
+ increase in time. From 10000 —> 100000 reads, we experience a
+ consecutive 9000x increase in time. Thus, there is a drastic
+ increase in timing when there is a 10x increase in sequence length
+ and read number. I would expect poor scalability for such a program.
+ By using the growth rate formula rate = ((present/past)^(1/n)) - 1,
+ we are able to get an approx grown rate of about 5000-6000% per 10x
+ increase. It is not feasible to actually analyze the entire human
+ genome, which consists of 3 billion base pairs. To estimate the time
+ for a human genome, I have the following formula —> time_human
+ = (initial time at t0)(1 + growth_rate)^6 (since we need 6 more
+ multiplications by 10 to achieve 1 billion from 1000). Even without
+ considering the factor of three, we have that the algorithm takes
+ 10^20 seconds, which is proves how unfeasible it is to use this 
+ method on the genome. 
+
+3. I spent about 30 minutes on this problem.

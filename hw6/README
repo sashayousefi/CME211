@@ -1,0 +1,79 @@
+In this project, we created an image class in C++ which blurs a given image 
+using convolutions between kernels and input images. Additionally, the class
+is able to calculate the sharpness of a given image. This project would be 
+of use to someone who has interest in image processing. In our code, we 
+implemented an image class and created instances of our class in the main
+file.  
+
+Our image class is implemented in the file, image.cpp, and our prototype is 
+defined in the related image.hpp file. In image.cpp, we first define a
+class constructor. The constructor takes the string name of the image
+to be blurred as an input, and stores the input file name. The constructor
+also instantiates an img boost array, output boost array, and sharpness
+boost array. The given function, ReadGrayscaleJPEG reads in the image 
+data and stores the pixel values in the img boost array. The output
+boost array will be used to store the values of the pixels for the 
+blurred image, and the sharpness boost array will be used to store
+the values of the pixels after applying the laplacian kernel to 
+calculate sharpness. 
+
+Next, we define two save functions, which save our blurred image. 
+We use function overloading to deal with two save types with different
+numbers of inputs. If the user provides no inputs, then the class 
+will call Save(), which defaults to saving the blurred image under the
+input file name. If the user provides an output string, then the class
+will call the second save function, which will save the blurred image 
+under the output file name.
+
+Following, we define our convolution function which computes all 
+necessary calculations for blurring the image or calculating sharpness. 
+A convolution is defined as a mathematical operation which computes 
+the sum of products of two containers of values. Each output pixel is
+calculated by summing the product of each kernel value and the 
+cooresponding input image pixel. Our function takes in an input
+boost array with the input image pixels, an instantiated but empty output
+boost array, and a kernel boost array with the kernel values. First, the 
+function checks that the requirements for the input, output, and kernel 
+images are met. The functions throws an error if the following conditions
+are not satisfied: the input and output are of the same size, the kernel is 
+odd sized and square, and the kernel is of at least size 3. If any of these
+are not satisfied, we exit the function. Since the kernel applied to the edge
+pixels will extend beyond the defined input image, we must handle the edge 
+cases where we need to calculate the pixels on the edge of the image. To do 
+so, we define a larger temp boost array. The larger temp array extends 
+the input array on all four sides of the image in order to accomodate 
+convolution calculations for pixels on the edge of the input image. We then 
+fill in these temp positions by copying the edge values to their 
+corresponding temp boundary positions. Once the temp array is filled, we apply 
+the kernel to each position in the temp array, and calculate the output
+pixels via convolution. Lastly, in order to avoid overflow/underflow errors, 
+we bound our pixel values between zero and 255. I create the temp 
+larger boost array in a helper function in order to help with code clarity.
+
+The BoxBlur function blurs the given image using the scaled-to-1 all ones 
+kernel. After creating the kernel, it calls the convolution function 
+using the input array, output array, and created kernel as parameters. 
+The blurred output image is stored in the instantiated output array. 
+The function takes as input an (odd) size, which defines the size of 
+the scaled all ones kernel that we create. 
+
+The final function is our Sharpness function, which creates the laplacian 
+kernel and applies it to the output image. It does so using the the 
+convolution function defined earlier, providing the output array, instantiated
+sharpness array, and laplacian kernel as inputs. The resulting pixels are
+stored in the sharpness array. The max of all the sharpness pixels quantifies
+the sharpness of the image.
+
+In a separate file, we define our main function, which creates image objects,
+blurs the image, calculates sharpness, and saves blurred images. First, 
+we create an image object for the input image, and calculate the sharpness
+of the original image. Then, we repeatedly instantiate a new image object, 
+and blur that image using varying kernel sizes. For each size, we calculate
+the sharpness of the image, print out the sharpness value, and save 
+the blurred image in an output file. 
+
+By defining our image class and our main function, we are able to gain
+a better grasp of the code necessary for image processing. We now have 
+an understanding of how convolutions play a roll in these fields, and 
+gain appreciation for the steps needed to find the resolution of an image.
+Thanks for reading :)!. 

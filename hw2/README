@@ -1,0 +1,59 @@
+Starting Homework 2: Creating an algorithm for movie recommendation 
+
+Part 1:
+
+1. My considerations for creating this test file were the following: at least 10 
+users and and 3 movies as specified, making sure each individual rated at least 
+2 movies, and making sure the individuals and the movies were not in 
+sequential order. Additionally, I made sure to include movies without enough 
+common users so that I could check to see if my program handled those correctly. 
+Additionally, I made sure there was a large gaps between the different movie numbers 
+to ensure scalability to non-sequential programs. 
+
+2. Yes, I made sure to have four columns with one space in between, similar
+to the u.data dataset. I also made sure to rank movies from 0 to 5 which 
+is how the given data structures their ratings. Lastly, as mentioned above, 
+I made sure that the test data was in non sequential order so that it scaled to
+other datasets.
+
+3. I did create a reference data. I utilized the compute similarity function to calculate
+the similarities between movies in my own dataset. I set the common user threshold to be three. 
+For the numerator, I calculated the difference between the user's rating and the mean ratings 
+for both movies, multiplied them, and summed over all users. For the denominator, I calculated
+the difference between the user rating and mean rating for each movie separately, squared them,
+and calculated the sum over each movie. Once each separate sums were calculated, I multiplied
+together both movie vectors and took the square root. 
+
+
+Part 2:
+
+
+1. python3 similarity.py ml-100k/u.data similarities.txt
+Input MovieLens file: ml-100k/u.data
+Output file for similarity data: similarities.txt
+Minimum number of common users: 5
+Read 100000 lines with a total of 1682 movies and 943 users
+Computed similarities in 69.933 seconds
+
+1 (918,0.91,5)
+2 (1056,1.0,5)
+3 (1081,0.98,5)
+4 (35,0.8,6)
+5 (976,0.93,5)
+6 (279,0.96,5)
+7 (968,1.0,7)
+8 (590,0.86,6)
+9 (113,0.96,5)
+10 (1202,0.97,5)
+
+2. First I created a read function which read the data into the text editor line by line and 
+computed the total number of movies, users, and lines read. Following, I have a compute_similarity
+function which calculates the greatest similarity between movies if there are enough common
+users between movies. In this function, I have a nested for loop, with the inner for loop 
+calculating the similarities between movie_i and the rest of the movies in the dataset using
+the ratings between common users. Once calculated,the function then takes the max similarities 
+and stores them in a dictionary with the keys as movie_i, and the values as a tuple containing
+(most similar movie, similarity score between these two movies, number of common users). If there 
+are not enough common users between movie_i and any movie, the dictionary stores an empty 
+tuple as the value. My final function writes the dictionary into a text file with the
+appropriate syntax. 

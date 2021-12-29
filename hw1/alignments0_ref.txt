@@ -1,0 +1,5 @@
+AAT 0 4
+GAA 3
+TAA 6
+ATA 5
+AGT -1
